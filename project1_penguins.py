@@ -76,3 +76,36 @@ def calc_percent_above_species_median_by_sex(data):
         result.append({'species': species, 'sex': sex, 'percent_above_median': round(percent, 2)})
 
     return result
+
+def calc_pearson_bill_flipper_by_species(data):
+    """Calculate Pearson correlation between bill_length_mm and flipper_length_mm by species."""
+    result = []
+    species_values = {}
+
+    # Group bill and flipper lengths by species
+    for row in data:
+        species = row['species']
+        bill = row['bill_length_mm']
+        flipper = row['flipper_length_mm']
+        if bill is not None and flipper is not None:
+            if species not in species_values:
+                species_values[species] = {'bills': [], 'flippers': []}
+            species_values[species]['bills'].append(bill)
+            species_values[species]['flippers'].append(flipper)
+
+    for species, values in species_values.items():
+        bills = values['bills']
+        flippers = values['flippers']
+        n = len(bills)
+        if n < 2:  
+            r = None
+        else:
+            mean_bill = sum(bills) / n
+            mean_flipper = sum(flippers) / n
+            numerator = sum((b - mean_bill)*(f - mean_flipper) for b, f in zip(bills, flippers))
+            denominator = (sum((b - mean_bill)**2 for b in bills) * sum((f - mean_flipper)**2 for f in flippers))**0.5
+            r = round(numerator / denominator, 2) if denominator != 0 else None
+        result.append({'species': species, 'pearson_r': r})
+
+    return result
+
