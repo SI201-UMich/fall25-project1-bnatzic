@@ -7,6 +7,7 @@
 
 import pandas as pd
 import statistics
+import csv
 
 def load_data(filename):
     """Load the CSV dataset."""
@@ -109,6 +110,46 @@ def calc_pearson_bill_flipper_by_species(data):
 
     return result
 
+# Test Functions
+
+def test_calc_avg_body_mass_by_species_island():
+    test_data = [
+        {'species':'A', 'island':'X', 'body_mass_g':100},
+        {'species':'A', 'island':'X', 'body_mass_g':200},
+        {'species':'B', 'island':'Y', 'body_mass_g':None}  # includes missing value
+    ]
+    # General case
+    print(calc_avg_body_mass_by_species_island(test_data))
+    # Edge case: empty data
+    print(calc_avg_body_mass_by_species_island([]))
+
+def test_calc_percent_above_species_median_by_sex():
+    test_data = [
+        {'species':'A','sex':'M','body_mass_g':100},
+        {'species':'A','sex':'F','body_mass_g':200},
+        {'species':'A','sex':'M','body_mass_g':None}  # includes missing value
+    ]
+    # General case
+    print(calc_percent_above_species_median_by_sex(test_data))
+    # Edge case: all masses the same
+    print(calc_percent_above_species_median_by_sex([
+        {'species':'A','sex':'M','body_mass_g':100},
+        {'species':'A','sex':'M','body_mass_g':100}
+    ]))
+
+def test_calc_pearson_bill_flipper_by_species():
+    test_data = [
+        {'species':'A','bill_length_mm':10,'flipper_length_mm':20},
+        {'species':'A','bill_length_mm':20,'flipper_length_mm':None},  # includes missing value
+        {'species':'B','bill_length_mm':5,'flipper_length_mm':15}
+    ]
+    # General case
+    print(calc_pearson_bill_flipper_by_species(test_data))
+    # Edge case: less than 2 data points
+    print(calc_pearson_bill_flipper_by_species([
+        {'species':'A','bill_length_mm':10,'flipper_length_mm':20}
+    ]))
+
 if __name__ == "__main__":
     # CSV filename
     input_file = "penguins.csv"
@@ -138,4 +179,4 @@ if __name__ == "__main__":
         writer = csv.DictWriter(f, fieldnames=["species","pearson_r"])
         writer.writeheader()
         writer.writerows(pearson_results)
-        
+
