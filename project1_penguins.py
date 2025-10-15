@@ -5,18 +5,31 @@
 # GenAI used: ChatGPT (used for guidance and code scaffolding; all code was reviewed, tested, and modified by me)
 # Function authorship: All functions written, tested, and verified by Brielle Natzic
 
-import pandas as pd
 import statistics
 import csv
 
 def load_data(filename):
-    """Load the CSV dataset."""
-    return pd.read_csv(filename)
+    """Load CSV data into a list of dictionaries."""
+    data = []
+    with open(filename, "r", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            # Convert numeric columns where possible
+            for key in ['bill_length_mm', 'flipper_length_mm', 'body_mass_g']:
+                if row[key] in ("", "NA", None):
+                    row[key] = None
+                else:
+                    row[key] = float(row[key])
+            data.append(row)
+    return data
 
 def clean_data(data):
-    """Clean the dataset by dropping rows with missing values in key columns."""
-    # Only keep rows with valid species, island, sex, and body mass
-    return data.dropna(subset=['species', 'island', 'sex', 'body_mass_g'])
+    """Remove rows missing species, island, sex, or body mass."""
+    cleaned = []
+    for row in data:
+        if row['species'] and row['island'] and row['sex'] and row['body_mass_g'] is not None:
+            cleaned.append(row)
+    return cleaned
 
 def calc_avg_body_mass_by_species_island(data):
     """Calculate average body mass for each species on each island."""
