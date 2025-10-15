@@ -6,6 +6,7 @@
 # Function authorship: All functions written, tested, and verified by Brielle Natzic
 
 import pandas as pd
+import statistics
 
 def load_data(filename):
     """Load the CSV dataset."""
@@ -40,4 +41,38 @@ def calc_avg_body_mass_by_species_island(data):
 
     return result
 
+def calc_percent_above_species_median_by_sex(data):
+    """Calculate the % of individuals above species median body mass, split by sex."""
+    result = []
 
+    # Compute species median body mass
+    species_medians = {}
+    for row in data:
+        species = row['species']
+        mass = row['body_mass_g']
+        if mass is not None:
+            species_medians.setdefault(species, []).append(mass)
+    
+    for species in species_medians:
+        species_medians[species] = statistics.median(species_medians[species])
+
+    # Count above-median per species-sex
+    counts = {}
+    totals = {}
+    for row in data:
+        species = row['species']
+        sex = row['sex']
+        mass = row['body_mass_g']
+        if mass is not None:
+            key = (species, sex)
+            totals[key] = totals.get(key, 0) + 1
+            if mass > species_medians[species]:
+                counts[key] = counts.get(key, 0) + 1
+
+    # Compute percentages
+    for key in totals:
+        species, sex = key
+        percent = 100 * counts.get(key, 0) / totals[key]
+        result.append({'species': species, 'sex': sex, 'percent_above_median': round(percent, 2)})
+
+    return result
