@@ -109,3 +109,33 @@ def calc_pearson_bill_flipper_by_species(data):
 
     return result
 
+if __name__ == "__main__":
+    # CSV filename
+    input_file = "penguins.csv"
+    
+    # Load and clean the data
+    data = load_data(input_file)
+    data = clean_data(data)
+    
+    # Calculation A: average body mass by species and island
+    avg_mass_results = calc_avg_body_mass_by_species_island(data)
+    import csv
+    with open("output_avg_body_mass_by_species_island.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["species","island","avg_body_mass_g"])
+        writer.writeheader()
+        writer.writerows(avg_mass_results)
+    
+    # Calculation B: % above species median by sex
+    percent_above_results = calc_percent_above_species_median_by_sex(data)
+    with open("output_percent_above_species_median_by_sex.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["species","sex","percent_above_median"])
+        writer.writeheader()
+        writer.writerows(percent_above_results)
+    
+    # Calculation C: Pearson correlation bill vs. flipper by species
+    pearson_results = calc_pearson_bill_flipper_by_species(data)
+    with open("output_pearson_bill_flipper_by_species.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=["species","pearson_r"])
+        writer.writeheader()
+        writer.writerows(pearson_results)
+        
